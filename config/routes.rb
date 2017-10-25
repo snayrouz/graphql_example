@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  root "pages#root"
+
+  post "graphql" => "graphqls#create"
+
+  mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
+
   resources :passwords, controller: "clearance/passwords", only: [:create, :new]
   resource :session, controller: "clearance/sessions", only: [:create]
 
@@ -12,11 +18,5 @@ Rails.application.routes.draw do
   delete "/sign_out" => "clearance/sessions#destroy", as: "sign_out"
   get "/sign_up" => "clearance/users#new", as: "sign_up"
   devise_for :users
-  if Rails.env.development?
-    mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
-  end
 
-  post "/graphql", to: "graphql#create"
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-  mount GraphiQL::Rails::Engine, at: "/graphql", graphql_path: "/graphql"
 end
