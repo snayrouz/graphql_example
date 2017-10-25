@@ -1,13 +1,17 @@
 class GraphqlController < ApplicationController
-  def execute
-    variables = ensure_hash(params[:variables])
-    query = params[:query]
-    operation_name = params[:operationName]
-    context = {
-      # Query context goes here, for example:
-      # current_user: current_user,
-    }
-    result = GraphqlExampleSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
+  before_action :authenticate_by_api_token!
+
+  def create
+    query_string = params[:query]
+    query_variables = JSON.lead(params[:variables]) || {}
+    context = { current_user: current_user }
+    result = GraphqlExampleSchema.execute(query_string, variables: query_variables, context:context)
+    # operation_name = params[:operationName]
+    # context = {
+    #   # Query context goes here, for example:
+    #   # current_user: current_user,
+    # }
+    # result = GraphqlExampleSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
   end
 
